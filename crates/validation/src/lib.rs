@@ -3,18 +3,18 @@ use sha2::{Digest, Sha256};
 use std::{collections::HashSet, fs::{self, File}, io::{Read, Write}, path::{Component, Path}};
 
 #[derive(Deserialize, Serialize)]
-pub struct Entry {
+pub struct entry {
     pub path: String,
     pub sha256: String,
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct Manifest {
+pub struct manifest {
     pub version: u32,
-    pub files: Vec<Entry>,
+    pub files: Vec<entry>,
 }
 
-impl Manifest {
+impl manifest {
     pub fn verify(&self, root: &Path) -> Result<usize, String> {
         if self.version != 1 || self.files.is_empty() {
             return Err("Unsupported installation: no approved file manifest is available".into());

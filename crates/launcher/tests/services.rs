@@ -1,9 +1,9 @@
-use launcher::Config;
+use launcher::config;
 use std::ffi::{CStr, CString};
 
 #[test]
 fn settings() {
-    let mut cfg = Config { fps: 30, scale: 0.75, cache: 128 };
+    let mut cfg = config { fps: 30, scale: 0.75, cache: 128 };
     assert!(cfg.valid());
     cfg.fps = 120;
     assert!(!cfg.valid());

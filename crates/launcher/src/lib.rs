@@ -2,25 +2,25 @@ use serde::Deserialize;
 use std::{ffi::{c_char, CStr, CString}, path::Path};
 
 #[derive(Deserialize)]
-pub struct Config {
+pub struct config {
     pub fps: u32,
     pub scale: f32,
     pub cache: u64,
 }
 
-impl Config {
+impl config {
     pub fn valid(&self) -> bool {
         [30, 60].contains(&self.fps) && self.scale.is_finite() && (0.5..=1.0).contains(&self.scale) && (16..=512).contains(&self.cache)
     }
 }
 
 #[derive(Deserialize)]
-struct Request {
+struct request {
     op: String,
     src: Option<String>,
     dst: Option<String>,
     ram: Option<u64>,
-    config: Option<Config>,
+    config: Option<config>,
 }
 
 #[no_mangle]
@@ -28,7 +28,7 @@ pub unsafe extern "C" fn iw4_run(data: *const c_char) -> *mut c_char {
     let res = std::panic::catch_unwind(|| -> Result<String, String> {
         if data.is_null() { return Err("Missing request".into()); }
         let text = CStr::from_ptr(data).to_str().map_err(|err| err.to_string())?;
-        let req: Request = serde_json::from_str(text).map_err(|err| err.to_string())?;
+        let req: request = serde_json::from_str(text).map_err(|err| err.to_string())?;
         match req.op.as_str() {
             "import" => {
                 let src = req.src.ok_or("Missing archive")?;
@@ -39,7 +39,7 @@ pub unsafe extern "C" fn iw4_run(data: *const c_char) -> *mut c_char {
             "verify" => {
                 let root = req.src.ok_or("Missing installation")?;
                 let data = include_str!("../../../game/manifest.json");
-                let doc: validation::Manifest = serde_json::from_str(data).map_err(|err| err.to_string())?;
+                let doc: validation::manifest = serde_json::from_str(data).map_err(|err| err.to_string())?;
                 let size = doc.verify(Path::new(&root))?;
                 Ok(format!("Verified {size} files; runtime unavailable"))
             }

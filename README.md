@@ -24,7 +24,7 @@ An unsigned IPA cannot be installed directly on a physical iPhone. Installation 
 
 Rust tests cover known SHA-256 fixtures, corruption, malformed and unsupported manifests, safe extraction, traversal, links, case collisions, malformed ZIPs, settings bounds, memory budgets, and FFI responses. Python tests exercise IPA acceptance/rejection and build configuration. GitHub Actions is the source of test and compilation results; source files alone do not constitute a passing build.
 
-No app icon, device benchmark, simulator UI tests, signing, release signing automation, controller controls, touch layout editor, or import deletion UI is included in this milestone. The initial service interfaces are experimental. Dependency versions use Cargo-compatible ranges; retain the generated Cargo.lock from the first successful build for repeatability in the next revision.
+No app icon, device benchmark, simulator UI tests, signing, release signing automation, controller controls, touch layout editor, or import deletion UI is included in this milestone. The initial service interfaces are experimental. Cargo.lock is retained from the first successful GitHub build, and subsequent Rust builds and tests use --locked.
 
 ## Licensing and next milestones
 

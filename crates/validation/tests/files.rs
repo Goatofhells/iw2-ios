@@ -1,12 +1,12 @@
 use std::{fs, io::Write};
-use validation::{Entry, Manifest};
+use validation::{entry, manifest};
 
 #[test]
 fn hashes() {
     let root = std::env::temp_dir().join(format!("iw4-hash-{}", std::process::id()));
     fs::create_dir_all(&root).unwrap();
     fs::write(root.join("test.bin"), b"abc").unwrap();
-    let mut doc = Manifest { version: 1, files: vec![Entry {
+    let mut doc = manifest { version: 1, files: vec![entry {
         path: "test.bin".into(),
         sha256: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad".into(),
     }] };

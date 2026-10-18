@@ -378,6 +378,19 @@ pub fn define_glk_or_mtk_view_dlg(superclass: &Class) -> *const Class {
         draw_in_rect(this, s, o, nil);
     }
 
+    extern "C" fn resize(_: &Object, _: Sel, _: ObjcId, size: NSSize) {
+        if let Some(lock) = crate::NATIVE_DISPLAY.get() {
+            let w = size.width as i32;
+            let h = size.height as i32;
+            let mut data = lock.lock().unwrap();
+            let change = data.screen_width != w || data.screen_height != h;
+            data.screen_width = w;
+            data.screen_height = h;
+            drop(data);
+            if change { send_message(Message::Resize { width: w, height: h }); }
+        }
+    }
+
     unsafe {
         decl.add_method(
             sel!(glkView: drawInRect:),
@@ -387,6 +400,10 @@ pub fn define_glk_or_mtk_view_dlg(superclass: &Class) -> *const Class {
         decl.add_method(
             sel!(drawInMTKView:),
             draw_in_rect2 as extern "C" fn(&Object, Sel, ObjcId),
+        );
+        decl.add_method(
+            sel!(mtkView: drawableSizeWillChange:),
+            resize as extern "C" fn(&Object, Sel, ObjcId, NSSize),
         );
     }
 

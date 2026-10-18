@@ -81,12 +81,13 @@ jobs:
           xcrun simctl boot "$dev"
           xcrun simctl bootstatus "$dev" -b
           xcrun simctl install "$dev" build/simulator/PocketRange.app
-          xcodebuild -project ios/IW4Pocket.xcodeproj -scheme IW4Pocket -configuration Release -destination "platform=iOS Simulator,id=$dev" -derivedDataPath build/sim-derived -resultBundlePath build/range-smoke.xcresult LIBRARY_SEARCH_PATHS="$(pwd)/target/$sim/release" CODE_SIGNING_ALLOWED=NO test 2>&1 | tee build/range-smoke.log
+          xcodebuild -project ios/IW4Pocket.xcodeproj -scheme IW4Pocket -configuration Release -destination "platform=iOS Simulator,id=$dev" -derivedDataPath build/sim-derived -resultBundlePath build/range-smoke.xcresult -parallel-testing-enabled NO ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES LIBRARY_SEARCH_PATHS="$(pwd)/target/$sim/release" CODE_SIGNING_ALLOWED=NO test 2>&1 | tee build/range-smoke.log
           data=$(xcrun simctl get_app_container "$dev" com.iw4pocket.range data)
           cp "$data/Documents/range-status.json" build/range-status.json
           python3 -c 'import json; d=json.load(open("build/range-status.json")); assert d["mode"] == 2 and d["shots"] >= 1, d; print(d)'
           xcrun simctl launch "$dev" com.iw4pocket.range
           xcrun simctl io "$dev" screenshot build/range-simulator.png
+          xcrun xcresulttool export attachments --path build/range-smoke.xcresult --output-path build/range-shots
       - name: Upload Rust range IPA
         uses: actions/upload-artifact@v4
         with:
@@ -101,6 +102,7 @@ jobs:
           path: |
             build/range-smoke.xcresult
             build/range-simulator.png
+            build/range-shots
             build/range-status.json
             build/range-licenses.txt
       - name: Upload build evidence

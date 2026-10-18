@@ -1,0 +1,1 @@
+Future runtime boundary. No IW4 runtime or renderer is implemented. Only original code and appropriately licensed dependencies may be integrated. The launcher never enables MW2 gameplay based on imported files alone.

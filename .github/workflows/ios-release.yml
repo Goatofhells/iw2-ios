@@ -1,0 +1,91 @@
+name: iOS release
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Optional new prerelease tag
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+      - name: Test services and packaging
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          cargo test --workspace 2>&1 | tee build/rust-tests.log
+          python3 -m unittest discover -s tools -p 'test_*.py' -v 2>&1 | tee build/build-tests.log
+      - name: Build ARM64 Rust library
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build -p launcher --release --target aarch64-apple-ios 2>&1 | tee build/rust-build.log
+      - name: Generate Xcode project
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew list xcodegen || brew install xcodegen
+          xcodegen generate --spec ios/project.yml 2>&1 | tee build/project.log
+      - name: Compile iPhone app
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild -project ios/IW4Pocket.xcodeproj -scheme IW4Pocket -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/derived ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build/xcodebuild.log
+      - name: Package and verify unsigned IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/package/Payload
+          cp -R build/derived/Build/Products/Release-iphoneos/IW4Pocket.app build/package/Payload/
+          cd build/package
+          ditto -c -k --keepParent Payload ../IW4Pocket-unsigned.ipa
+          cd ../..
+          python3 tools/verify_ipa.py build/IW4Pocket-unsigned.ipa 2>&1 | tee build/ipa-check.log
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: IW4Pocket-unsigned
+          path: build/IW4Pocket-unsigned.ipa
+          if-no-files-found: error
+      - name: Upload build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-evidence
+          path: |
+            build/*.log
+            Cargo.lock
+            ios/Info.plist
+            ios/IW4Pocket.xcodeproj/project.pbxproj
+          if-no-files-found: warn
+  release:
+    if: github.event_name == 'workflow_dispatch' && inputs.tag != ''
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: IW4Pocket-unsigned
+          path: build
+      - name: Publish optional prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git check-ref-format "refs/tags/$TAG"
+          gh release create "$TAG" build/IW4Pocket-unsigned.ipa --target "$GITHUB_SHA" --prerelease --title "IW4 Pocket $TAG" --notes "Launcher foundation. Unsigned IPA requires appropriate code signing before installation on a physical iPhone. No game runtime or MW2 compatibility."

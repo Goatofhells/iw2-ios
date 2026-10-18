@@ -1,0 +1,1 @@
+No server is implemented. The future original prototype will require server-authoritative movement, combat, match state, scoreboard, and connection diagnostics before multiplayer can be enabled. No MW2 protocol compatibility is claimed.

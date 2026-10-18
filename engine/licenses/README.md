@@ -1,0 +1,3 @@
+malloc_buf 0.0.6 declares MIT in its published Cargo.toml but its crate archive omits the license text. The retained text is the upstream author's license from https://github.com/SSheldon/malloc_buf/blob/master/LICENSE, fetched October 18, 2026. It is bundled with the notices rather than silently omitting this dependency's license.
+
+quad-rand 0.2.3 also declares MIT but ships no license text, and its upstream repository has no license file. The supplied notice reproduces the standard MIT terms with the author exactly as credited in the published Cargo.toml, `not-fl3 <not.fl3@gmail.com>`. No copyright year is inferred. Declaration source: https://crates.io/crates/quad-rand/0.2.3 and https://github.com/not-fl3/quad-rand/blob/master/Cargo.toml.

@@ -18,6 +18,10 @@ for item in data["packages"]:
     root = pathlib.Path(item["manifest_path"]).parent
     files = sorted(path for path in root.rglob("*") if path.is_file() and
         (path.name.lower().startswith(("license", "licence", "copying", "copyright")) or path.name.lower() == "ofl.txt"))
+    extra = pathlib.Path("engine/licenses") / f"{item['name']}-{item['version']}.LICENSE"
+    if not files and extra.is_file():
+        text.append(f"\n{item['name']} {item['version']}\n{item.get('repository') or ''}\nLicense: {item['license']}\n{extra.read_text()}\n")
+        continue
     if not files:
         raise ValueError(f"Missing license text: {item['name']}")
     text.append(f"\n{item['name']} {item['version']}\n{item.get('repository') or ''}\nLicense: {item['license']}\n")

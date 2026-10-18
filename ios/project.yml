@@ -3,6 +3,19 @@ options:
   deploymentTarget:
     iOS: "15.0"
 targets:
+  rangeui:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: rangeui
+    dependencies:
+      - target: IW4Pocket
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.iw4pocket.rangeui
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: IW4Pocket
+        SWIFT_VERSION: "5.0"
   IW4Pocket:
     type: application
     platform: iOS
@@ -33,3 +46,14 @@ targets:
         UIFileSharingEnabled: false
         LSSupportsOpeningDocumentsInPlace: false
         ITSAppUsesNonExemptEncryption: false
+        LSApplicationQueriesSchemes:
+          - pocketrange
+schemes:
+  IW4Pocket:
+    build:
+      targets:
+        IW4Pocket: all
+        rangeui: [test]
+    test:
+      targets:
+        - rangeui

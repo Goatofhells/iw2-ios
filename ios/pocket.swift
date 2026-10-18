@@ -9,6 +9,7 @@ struct pocket: App {
 }
 
 struct home: View {
+    @Environment(\.openURL) private var open
     @State private var picker = false
     @State private var busy = false
     @State private var status = "No verified installation"
@@ -49,9 +50,13 @@ struct home: View {
                 Section("Play") {
                     NavigationLink("Offline Practice") {
                         VStack(spacing: 18) {
-                            Image(systemName: "cube.transparent").font(.largeTitle)
-                            Text("Practice arena is not implemented").font(.title2.bold())
-                            Text("The next milestone is an original 3D arena with touch controls. No MW2 engine or assets are included.")
+                            Image(systemName: "scope").font(.largeTitle)
+                            Text("Pocket Range · Rust + Macroquad").font(.title2.bold())
+                            Text("The original 3D target range is a companion app. Install the Pocket Range IPA using KSign, then open it here. Includes touch movement, aiming, shooting, reloads, jumping, crouching, and a 60-second round.")
+                            Button("Open Pocket Range") {
+                                if let url = URL(string: "pocketrange://play") { open(url) }
+                            }.buttonStyle(.borderedProminent)
+                            Text("No MW2 engine or assets are included.").font(.footnote)
                         }.padding().navigationTitle("Offline Practice")
                     }
                     NavigationLink("Multiplayer") {

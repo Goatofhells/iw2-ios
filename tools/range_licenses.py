@@ -2,7 +2,7 @@ import json
 import pathlib
 import subprocess
 
-data = json.loads(subprocess.check_output(["cargo", "metadata", "--locked", "--format-version", "1"], text=True))
+data = json.loads(subprocess.check_output(["cargo", "metadata", "--locked", "--filter-platform", "aarch64-apple-ios", "--format-version", "1"], text=True))
 nodes = {item["id"]: item for item in data["resolve"]["nodes"]}
 todo = [item["id"] for item in data["packages"] if item["name"] == "range"]
 seen = set()

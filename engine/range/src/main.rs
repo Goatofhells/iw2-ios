@@ -109,7 +109,7 @@ fn main() {
             let dir = vec3(game.yaw.sin() * game.pitch.cos(), game.pitch.sin(), -game.yaw.cos() * game.pitch.cos());
             let right = vec3(game.yaw.cos(), 0., game.yaw.sin());
             set_camera(&Camera3D { position: eye, target: eye + dir, up: Vec3::Y,
-                fovy: if aim { 42. } else { 70. }, z_near: 0.03, z_far: 100., ..Default::default() });
+                fovy: if aim { 42_f32.to_radians() } else { 70_f32.to_radians() }, z_near: 0.03, z_far: 100., ..Default::default() });
             draw_plane(Vec3::ZERO, vec2(20., 24.), None, Color::from_hex(0x33434a));
             for idx in -10..=10 {
                 draw_line_3d(vec3(idx as f32, 0.005, -12.), vec3(idx as f32, 0.005, 12.), Color::from_hex(0x42545a));

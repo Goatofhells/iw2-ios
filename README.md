@@ -8,13 +8,13 @@ Pocket Range uses upstream Macroquad 0.4.16 with Metal. Download PocketRange-uns
 
 ## Current milestone
 
-The app provides Home, Import Game Files, Verify Installation, Offline Practice status, Multiplayer status, persistent Settings, and Diagnostics. The dark launcher supports landscape iPhone and iPad layouts. It imports ZIP archives or individual FF, IWD, and CFG files into Application Support. Each selection creates a separate import set; folder import and merging sets are not supported yet.
+The app provides Home, Import Game Files, Verify Installation, a link to the companion Offline Practice app, Multiplayer status, persistent Settings, and Diagnostics. The dark launcher supports landscape iPhone and iPad layouts. It imports ZIP archives or individual FF, IWD, and CFG files into Application Support. Each selection creates a separate import set; folder import and merging sets are not supported yet.
 
 ZIP imports reject traversal, absolute paths, symbolic links, duplicate names including case collisions, excessive entry counts, and expanded sizes above 8 GiB. Extraction uses a fresh destination and removes partial output on failure. Imports run away from the UI thread. ZIPs must be unencrypted and use stored or deflate compression. Available device storage can impose a lower practical limit.
 
 The version 1 trusted manifest is intentionally empty because no trustworthy MW2 hashes were supplied. Verification therefore returns unsupported. The Rust verifier supports streaming SHA-256, path checks, and corruption detection, exercised using original fixtures. Hash verification does not establish Steam ownership. MW2 gameplay stays disabled independently of verification results.
 
-Settings save future frame rate, resolution, cache cap, sensitivity, and inverted aiming preferences. These have no gameplay effect until a runtime exists. Diagnostics show device class, OS, physical RAM, imported set count, and a Rust-derived resource budget. This is not live resident-memory telemetry or a device benchmark.
+Launcher Settings save future frame rate, resolution, cache cap, sensitivity, and inverted aiming preferences. These do not affect the separate range, which has its own sensitivity and invert controls. Diagnostics show device class, OS, physical RAM, imported set count, and a Rust-derived resource budget. This is not live resident-memory telemetry or a device benchmark.
 
 ## GitHub-only builds and tests
 
@@ -34,4 +34,4 @@ No app icon, device benchmark, simulator UI tests, signing, release signing auto
 
 No proprietary engine code, executable, assets, maps, sounds, or textures are bundled. Users must have lawful access to any files they import. Original MW2 files remain subject to their owners' rights; ownership of files does not grant redistribution or engine-porting rights. No DRM, authentication, anti-cheat, or server restrictions are bypassed.
 
-Complete milestones 1–5 with a passing GitHub build before continuing. Milestone 6 is IPA verification and signed device testing. Then implement a minimal original 3D renderer and touch movement, an original arena, one tested bot, experimental authoritative networking, and documented MW2 compatibility research. Compatibility research has not been completed and no lawful compatible runtime is assumed to exist.
+The launcher foundation passed GitHub builds and the user confirmed it runs on their iPhone. The next slice is the Macroquad original range, followed by physical-device range testing, a tested bot, experimental authoritative networking, and MW2 compatibility research. No lawful compatible IW4 runtime is assumed to exist.

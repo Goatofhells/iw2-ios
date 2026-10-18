@@ -1,21 +1,19 @@
-# Foundation build report
+# Rust range device-test build
 
-Implemented the initial repository, SwiftUI launcher, Rust services, automated tests, and GitHub release workflow. The first complete GitHub run succeeded on October 18, 2026:
+The user confirmed the original launcher works on their iPhone. Macroquad 0.4.16 now provides the original Rust target range through a separate native app. The launcher opens it using the pocketrange URL scheme. Miniquad 0.4.11 is retained with its upstream licenses and focused iOS input, resize, and depth-buffer patches.
 
-https://github.com/Goatofhells/iw2-ios/actions/runs/39135133169
+Verified GitHub build: https://github.com/Goatofhells/iw2-ios/actions/runs/39139755816
+Source revision: b4cb1263b74ed4bb6e512a7d4c6f09215b5dcaae
 
-- Four Rust integration tests passed, covering hashing, manifests, corrupted files, archive security, configuration, memory limits, and the C ABI through multiple assertions.
-- Two Python tests passed, covering build settings and IPA structural checks with five synthetic acceptance/rejection cases.
-- Zero test failures.
-- ARM64 Rust static library built successfully.
-- Xcode compiled the SwiftUI application for iOS 15.0+ successfully.
-- Unsigned IPA packaged, structurally verified, and uploaded with build evidence.
-- No local builds or local test execution were performed.
+Eight Rust tests and two Python packaging tests passed. GitHub built the ARM64 Rust services, SwiftUI launcher, and Rust range. Both unsigned IPAs passed structural verification. No local project builds or tests were run. This proves compilation and packaging, not gameplay on a physical device.
 
-The follow-up revision retains the generated Cargo.lock, enforces locked Rust dependencies, uses lowercase custom type names per workspace rules, and explicitly requests full-screen landscape presentation. Its GitHub run must also pass before treating that revision as verified.
+The earlier simulator attempt failed to keep the app open. Its crash report identified a missing required Metal resize selector, now implemented. The iOS Metal view also enables multiple touches, handles each touch's actual phase, honors render scale, and requests the depth/stencil format expected by the renderer. Runtime verification of these fixes remains pending the user's iPhone test. At the user's request, simulator UI tests are now optional and disabled on normal pushes. No simulator success is claimed.
 
-Created source and build files: Cargo.toml, Cargo.lock, ios/pocket.swift, ios/bridge.h, ios/project.yml; launcher, validation, and diag crates; Rust integration tests; tools/test_build.py and tools/verify_ipa.py; game/manifest.json; .github/workflows/ios-release.yml; repository, engine, game, and server documentation; and .gitignore. Xcode project and Info.plist are generated on GitHub and saved in build evidence.
+The range implements touch movement and aiming, obstacle collision, target ray hits and respawn, shooting, 12-round magazines, unlimited timed reloads, jumping, crouching, sprint, aim zoom, pause, and 60-second rounds with hit and shot counts. Range sensitivity and invert controls apply immediately but are not persisted. Launcher preferences do not control the companion range. No JIT entitlement is required by this native ARM64 build.
 
-Not implemented: an IW4 engine port, 3D rendering, playable prototype, bots, touch gameplay, controllers, multiplayer, MW2 server compatibility, or complete compatibility research. The manifest is intentionally empty, so no MW2 installation is reported as verified. Imported files never enable gameplay. No copyrighted game content is bundled or downloaded, and no ownership or redistribution rights are inferred from file hashes.
+Both version 0.2.0 IPAs and START HERE.txt were copied over USB into KSign Documents/IW4 Pocket/0.2.0. Both IPAs were pulled back and their SHA-256 hashes matched the originals:
 
-The connected iPhone has not run this app. Unsigned IPA installation requires appropriate Apple code signing and provisioning. Structural verification is not a device runtime test. Next milestone: sign and validate the launcher on an iPhone, then build and test an original rendering and touch-movement slice.
+- PocketRange-unsigned.ipa: 494190 bytes; 24a45aae90e8528bb8e2799d900c7e03ba77f3568c91a25ddf8f8eb1dc406b80
+- IW4Pocket-unsigned.ipa: 406100 bytes; 7133be4528bde9f8929c8b68049d838bf8774067b7b19408d89be131a347d95d
+
+The user signs and installs with KSign. Neither the new range nor the updated launcher is claimed installed or tested on the physical phone yet. No IW4/MW2 runtime, imported-map support, bots, multiplayer, sound, controller support, or performance benchmark is included.

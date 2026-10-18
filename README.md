@@ -4,7 +4,7 @@ An iOS 15+ SwiftUI launcher with ARM64 Rust services and a separately packaged M
 
 ## Rust range
 
-Pocket Range uses upstream Macroquad 0.4.16 with Metal. Download PocketRange-unsigned, sign it in KSign, and install it alongside the launcher. The launcher's Offline Practice page opens it using its URL scheme. See [engine/README.md](engine/README.md) for controls, features, licensing, and verification limits. The runtime build must pass GitHub compilation and simulator checks before it is considered verified.
+Pocket Range uses upstream Macroquad 0.4.16 with Metal and a retained Miniquad iOS backend patch. Download PocketRange-unsigned, sign it in KSign, and install it alongside the launcher. The launcher's Offline Practice page opens it using its URL scheme. See [engine/README.md](engine/README.md) for controls, features, licensing, and verification limits. Native ARM64 code needs no JIT entitlement. Compilation and IPA checks establish a device-test build; physical runtime verification is performed by the user.
 
 ## Current milestone
 
@@ -28,7 +28,7 @@ An unsigned IPA cannot be installed directly on a physical iPhone. Installation 
 
 Rust tests cover known SHA-256 fixtures, corruption, malformed and unsupported manifests, safe extraction, traversal, links, case collisions, malformed ZIPs, settings bounds, memory budgets, and FFI responses. Python tests exercise IPA acceptance/rejection and build configuration. GitHub Actions is the source of test and compilation results; source files alone do not constitute a passing build.
 
-No app icon, device benchmark, simulator UI tests, signing, release signing automation, controller controls, touch layout editor, or import deletion UI is included in this milestone. The initial service interfaces are experimental. Cargo.lock is retained from the first successful GitHub build, and subsequent Rust builds and tests use --locked.
+No app icon, device benchmark, signing, release signing automation, controller controls, touch layout editor, or import deletion UI is included. The service interfaces are experimental. Cargo.lock retains exact resolved versions and Rust builds and tests use --locked. Simulator UI testing is an optional manual-dispatch input and is disabled for normal pushes at the user's request. The first simulator launch failed due to a missing Metal resize callback; the backend patch addresses the crash report, but its runtime fix is not claimed as verified until a device test succeeds.
 
 ## Licensing and next milestones
 

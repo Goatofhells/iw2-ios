@@ -493,6 +493,7 @@ unsafe fn create_metal_view(screen_rect: NSRect, _sample_count: i32, high_dpi: b
     msg_send_![mtk_view_obj, setDelegate: mtk_view_dlg_obj];
     let device = MTLCreateSystemDefaultDevice();
     msg_send_![mtk_view_obj, setDevice: device];
+    msg_send_![mtk_view_obj, setDepthStencilPixelFormat: MTLPixelFormat::Depth32Float_Stencil8];
     msg_send_![mtk_view_obj, setUserInteractionEnabled: YES];
     msg_send_![mtk_view_obj, setMultipleTouchEnabled: YES];
     let scale: f64 = if high_dpi {

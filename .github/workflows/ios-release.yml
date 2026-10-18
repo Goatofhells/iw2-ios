@@ -18,8 +18,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
-      - name: Resolve new engine dependencies
-        run: cargo generate-lockfile
       - name: Test services and packaging
         shell: bash
         run: |

@@ -81,9 +81,19 @@ impl state {
         self.yaw += cmd.look.x;
         self.pitch = (self.pitch + cmd.look.y).clamp(-1.3, 1.3);
         if cmd.crouch { self.low = !self.low; }
-        if cmd.jump && self.pos.y <= 0.001 { self.vel = 5.; }
+        let oldy = self.pos.y;
+        if cmd.jump && self.vel == 0. { self.vel = 5.; }
         self.vel -= 14. * dt;
         self.pos.y = (self.pos.y + self.vel * dt).max(0.);
+        for (mid, size) in walls {
+            let top = mid.y + size.y * 0.5;
+            if self.vel <= 0. && oldy >= top && self.pos.y <= top
+                && (self.pos.x - mid.x).abs() < size.x * 0.5 + 0.3
+                && (self.pos.z - mid.z).abs() < size.z * 0.5 + 0.3 {
+                self.pos.y = top;
+                self.vel = 0.;
+            }
+        }
         if self.pos.y == 0. { self.vel = 0.; }
         let fwd = vec3(self.yaw.sin(), 0., -self.yaw.cos());
         let side = vec3(self.yaw.cos(), 0., self.yaw.sin());
@@ -112,7 +122,7 @@ impl state {
             if self.reload == 0. { self.ammo = 12; }
         }
         if cmd.reload && self.ammo < 12 && self.reload == 0. { self.reload = 1.2; }
-        if cmd.fire && self.cool == 0. && self.reload == 0. && self.ammo > 0. {
+        if cmd.fire && self.cool == 0. && self.reload == 0. && self.ammo > 0 {
             self.ammo -= 1;
             self.shots += 1;
             self.cool = 0.18;
@@ -187,5 +197,22 @@ mod tests {
         assert!(game.beam.z > -7.);
         game.step(f32::NAN, input { walk: Vec2::ONE, ..Default::default() });
         assert!(game.pos.is_finite());
+    }
+
+    #[test]
+    fn landing() {
+        let mut game = state::default();
+        game.pos = vec3(-4., 3., -1.);
+        for _ in 0..30 { game.step(0.05, input::default()); }
+        assert_eq!(game.pos.y, 1.5);
+        game.step(0.05, input { jump: true, ..Default::default() });
+        assert!(game.pos.y > 1.5);
+        let mut a = state::default();
+        let mut b = state::default();
+        for _ in 0..10 {
+            a.step(0.05, input { walk: vec2(0., 1.), ..Default::default() });
+            b.step(0.05, input { walk: Vec2::ONE, ..Default::default() });
+        }
+        assert!(((a.pos - vec3(0., 0., 8.)).length() - (b.pos - vec3(0., 0., 8.)).length()).abs() < 0.001);
     }
 }

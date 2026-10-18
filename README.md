@@ -1,6 +1,10 @@
 # IW4 Pocket
 
-An iOS 15+ SwiftUI launcher foundation with ARM64 Rust services. This is not a port of the IW4 engine. No MW2 gameplay, compatible server connection, renderer, bots, or original FPS prototype is implemented.
+An iOS 15+ SwiftUI launcher with ARM64 Rust services and a separately packaged Macroquad practice range. This is not a port of the IW4 engine. No MW2 gameplay, compatible server connection, or bots are implemented.
+
+## Rust range
+
+Pocket Range uses upstream Macroquad 0.4.16 with Metal. Download PocketRange-unsigned, sign it in KSign, and install it alongside the launcher. The launcher's Offline Practice page opens it using its URL scheme. See [engine/README.md](engine/README.md) for controls, features, licensing, and verification limits. The runtime build must pass GitHub compilation and simulator checks before it is considered verified.
 
 ## Current milestone
 

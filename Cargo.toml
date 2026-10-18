@@ -1,6 +1,10 @@
 [workspace]
 members = ["crates/launcher", "crates/validation", "crates/diag", "engine/range"]
 resolver = "2"
+exclude = ["engine/vendor/miniquad"]
+
+[patch.crates-io]
+miniquad = { path = "engine/vendor/miniquad" }
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }

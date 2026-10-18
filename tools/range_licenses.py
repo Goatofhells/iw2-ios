@@ -13,7 +13,7 @@ while todo:
         todo.extend(item["pkg"] for item in nodes[key]["deps"])
 text = []
 for item in data["packages"]:
-    if item["id"] not in seen or item["source"] is None:
+    if item["id"] not in seen or (item["source"] is None and item["name"] != "miniquad"):
         continue
     root = pathlib.Path(item["manifest_path"]).parent
     files = sorted(path for path in root.rglob("*") if path.is_file() and

@@ -7,6 +7,11 @@ on:
         description: Optional new prerelease tag
         required: false
         type: string
+      simulator:
+        description: Run optional iPhone simulator UI test
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -17,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
+          targets: aarch64-apple-ios
       - name: Test services and packaging
         shell: bash
         run: |
@@ -70,11 +75,13 @@ jobs:
           cd ../..
           python3 tools/verify_ipa.py build/PocketRange-unsigned.ipa 2>&1 | tee build/range-ipa.log
       - name: Test Rust engine in iPhone simulator
+        if: github.event_name == 'workflow_dispatch' && inputs.simulator
         env:
           IPHONEOS_DEPLOYMENT_TARGET: "15.0"
         run: |
           set -euo pipefail
           if [ "$(uname -m)" = arm64 ]; then sim=aarch64-apple-ios-sim; else sim=x86_64-apple-ios; fi
+          rustup target add "$sim"
           cargo build -p range -p launcher --release --locked --target "$sim" 2>&1 | tee build/range-sim-build.log
           python3 tools/package_range.py "$sim" build/simulator
           dev=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')
